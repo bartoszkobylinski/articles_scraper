@@ -1,0 +1,4 @@
+{% for element in data %}
+    Your title is: {{ element.title }}
+    with url: {{ element.url }}
+{% endfor %}

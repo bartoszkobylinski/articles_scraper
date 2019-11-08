@@ -1,5 +1,5 @@
-{% for element in data %}
+{% for title, url in data.items() %}
     Zostal opublikowany nowy artykul na jednym z portali:
-    Artykul o tytule: {{ element.title }}
-    i link bezposrednio do artykulu: {{ element.url }}  
+    Artykul o tytule: {{ data.title }}
+    i link bezposrednio do artykulu: {{ data.url }}  
 {% endfor %}

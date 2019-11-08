@@ -1,10 +1,11 @@
 import smtplib
+import jinja2
 from smtplib import SMTP, SMTPAuthenticationError, SMTPException
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from jinja2 import Environment, FileSystemLoader
 
-from articles_list import articles
+#from articles_list import articles
 
 from credentials import credentials as credentials
 

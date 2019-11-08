@@ -1,4 +1,5 @@
 {% for element in data %}
-    Your title is: {{ element.title }}
-    with url: {{ element.url }}
+    Zostal opublikowany nowy artykul na jednym z portali:
+    Artykul o tytule: {{ element.title }}
+    i link bezposrednio do artykulu: {{ element.url }}  
 {% endfor %}

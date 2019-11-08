@@ -8,7 +8,15 @@ import requests_cache
 from selenium import webdriver
 
 from current_ministry_of_finance import get_current_articles_on_ministry_of_finance, get_current_articles_on_website_podatki_gov_pl
+from send_mail import send_mail, make_massage
+from credentials import credentials as credentials
 
+username = credentials['username']
+password = credentials['password']
+
+to_smbdy = 'bartosz.kobylinski@gmail.com'
+from_smbdy = 'bartosz.kobylinski@gmail.com'
+subject = "Opublikowano wlasnie nowy artykul na obserwowanych portalach"
 
 path = "/home/bart/PythonProjects/flight/chrome/chromedriver"
 browser = webdriver.Chrome(path)
@@ -51,6 +59,7 @@ def insert_articles_to_database(articles_list):
         cursor.execute("SELECT Title from Articles WHERE Title=?",(article['title'],))
         result = cursor.fetchone()
         if not result:
+            send_mail(username,password, to_smbdy, from_smbdy, subject, make_massage(article))
             cursor.execute("INSERT INTO Articles VALUES (?,?)",(article['title'],article['url']))
             database_connection.commit()
                 
@@ -61,13 +70,10 @@ def insert_articles_to_database(articles_list):
 def main():
     make_database()
     a = get_archive_article_from_archive()
-    #insert_articles_to_database(a)
-    print(a)
-    '''
+    insert_articles_to_database(a)
     a = get_current_articles_on_ministry_of_finance()
     insert_articles_to_database(a)
     a = get_current_articles_on_website_podatki_gov_pl()
     insert_articles_to_database(a)
-    '''
 main()
 print("It's done!")

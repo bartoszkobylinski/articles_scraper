@@ -4,6 +4,7 @@ import time
 import smtplib
 import requests
 import requests_cache
+import schedule
 
 from selenium import webdriver
 
@@ -15,7 +16,7 @@ from shorten_url import shorten_link
 username = credentials['username']
 password = credentials['password']
 
-to_smbdy = 'alinab8989@gmail.com'
+to_smbdy = 'bartosz.kobylinski@gmail.com'
 from_smbdy = 'bartosz.kobylinski@gmail.com'
 subject = "Opublikowano wlasnie nowy artykul na obserwowanych portalach"
 
@@ -63,15 +64,11 @@ def insert_articles_to_database(articles_list):
             cursor.execute("INSERT INTO Articles VALUES (?,?)",(article['title'],article['url']))
             article['url'] = shorten_link(article['url'])
             send_mail(username,password, to_smbdy, from_smbdy, subject, make_massage(article))
-            
             database_connection.commit()
-                
-#getCurrentArticles()
-#updateArticles()
-#scheduleJob()
 
-def main():
+def get_archive_and_make_database():
     make_database()
+<<<<<<< HEAD
     a = get_archive_article_from_archive()
     insert_articles_to_database(a)
     a = get_current_articles_on_ministry_of_finance()
@@ -80,3 +77,21 @@ def main():
     insert_articles_to_database(a)
 main()
 print("It's done!")
+=======
+    archive = get_archive_article_from_archive()
+    insert_articles_to_database(archive)
+def main_job_get_current_articles():
+    articles = get_current_articles_on_ministry_of_finance()
+    insert_articles_to_database(articles)
+    articles = get_current_articles_on_website_podatki_gov_pl()
+    insert_articles_to_database(articles)
+
+if __name__ == "__main__":
+    
+    get_archive_and_make_database()
+    schedule.every().day.at("08:00").do(main_job_get_current_articles)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+>>>>>>> 0c327c26a7927ae53c01680c93486696770e91d7

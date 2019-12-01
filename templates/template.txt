@@ -1,4 +1,4 @@
-{% for title, url in data.items() %}
+{% for title in data.items() %}
     Zostal opublikowany nowy artykul na jednym z portali:
     Artykul o tytule: {{ data.title }}
     i link bezposrednio do artykulu: {{ data.url }}  

@@ -68,16 +68,6 @@ def insert_articles_to_database(articles_list):
 
 def get_archive_and_make_database():
     make_database()
-<<<<<<< HEAD
-    a = get_archive_article_from_archive()
-    insert_articles_to_database(a)
-    a = get_current_articles_on_ministry_of_finance()
-    insert_articles_to_database(a)
-    a = get_current_articles_on_website_podatki_gov_pl()
-    insert_articles_to_database(a)
-main()
-print("It's done!")
-=======
     archive = get_archive_article_from_archive()
     insert_articles_to_database(archive)
 def main_job_get_current_articles():
@@ -89,9 +79,9 @@ def main_job_get_current_articles():
 if __name__ == "__main__":
     
     get_archive_and_make_database()
-    schedule.every().day.at("08:00").do(main_job_get_current_articles)
+    schedule.every().day.at("20:40").do(main_job_get_current_articles)
 
     while True:
         schedule.run_pending()
         time.sleep(1)
->>>>>>> 0c327c26a7927ae53c01680c93486696770e91d7
+

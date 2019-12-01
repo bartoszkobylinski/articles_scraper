@@ -15,7 +15,7 @@ from shorten_url import shorten_link
 username = credentials['username']
 password = credentials['password']
 
-to_smbdy = 'bartosz.kobylinski@gmail.com'
+to_smbdy = 'alinab8989@gmail.com'
 from_smbdy = 'bartosz.kobylinski@gmail.com'
 subject = "Opublikowano wlasnie nowy artykul na obserwowanych portalach"
 

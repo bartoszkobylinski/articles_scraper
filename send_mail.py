@@ -9,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from credentials import credentials as credentials
 
-def send_mail(username, password, to_whom='bartosz.kobylinski@gmail.com', sender='bartosz.kobylinski@gmail.com', subject='It mail', body=None,):
+def send_mail(username, password, to_whom='alinab8989@gmail.com', sender='bartosz.kobylinski@gmail.com', subject='New article has been published!', body=None,):
     host = "smtp.gmail.com"
     port = 587
     #-------------------------------------

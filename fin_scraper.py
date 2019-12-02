@@ -79,7 +79,7 @@ def main_job_get_current_articles():
 if __name__ == "__main__":
     
     get_archive_and_make_database()
-    schedule.every().day.at("08:00").do(main_job_get_current_articles)
+    schedule.every().day.at("20:40").do(main_job_get_current_articles)
 
     while True:
         schedule.run_pending()

@@ -3,3 +3,4 @@ articles.db
 credentials.py
 __pycache__/
 fin_scraper_classes.py
+chromedriver

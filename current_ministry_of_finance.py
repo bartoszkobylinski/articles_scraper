@@ -2,8 +2,8 @@ from selenium import webdriver
 import time
 
 
-path = "/home/bart/PythonProjects/flight/chrome/chromedriver"
-browser = webdriver.Chrome(path)
+path = "/home/bart/PythonProjects/fin_min/chromedriver"
+browser = webdriver.Chrome(executable_path=path)
 
 
 def get_current_articles_on_ministry_of_finance():
@@ -31,7 +31,6 @@ def get_current_articles_on_ministry_of_finance():
         article["title"] = title_list[element]
         article["url"] = url_list[element]
         articles_list.append(article)
-
     return articles_list
 
 

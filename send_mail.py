@@ -7,17 +7,17 @@ from jinja2 import Environment, FileSystemLoader
 
 # from articles_list import articles
 
-from credentials import credentials as credentials
+from credentials import credentials 
 
 
 def send_mail(
     username,
     password,
-    to_whom="alinab8989@gmail.com",
-    sender="bartosz.kobylinski@gmail.com",
+    to_whom= credentials['username'],
+    sender=credentials['username'],
     subject="New article has been published!",
     body=None,
-):
+    ):
     host = "smtp.gmail.com"
     port = 587
     massage = MIMEMultipart("alternative")

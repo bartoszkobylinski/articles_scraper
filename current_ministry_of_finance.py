@@ -1,59 +1,73 @@
-from selenium import webdriver
-import time
+import requests
+from requests import Response
+from bs4 import BeautifulSoup
 
-
-path = "/home/bart/PythonProjects/fin_min/chromedriver"
-browser = webdriver.Chrome(executable_path=path)
-
-
+   
 def get_current_articles_on_ministry_of_finance():
+
     url_ministry_of_finance_list = [
         "https://www.gov.pl/web/finanse/ostrzezenia-i-wyjasnienia-podatkowe",
         "https://www.gov.pl/web/finanse/ostrzezenia-i-wyjasnienia-podatkowe?page=2",
     ]
-
-    title_list = []
-    url_list = []
     articles_list = []
     for url in url_ministry_of_finance_list:
-        browser.get(url)
-        articles = browser.find_element_by_class_name("art-prev--near-menu")
-        articles_title = articles.find_elements_by_tag_name("li")
-        for article in articles_title:
-            titles = article.find_elements_by_class_name("title")
-            for title in titles:
-                title_list.append(title.text)
-        article_urls = articles.find_elements_by_tag_name("a")
-        for article_url in article_urls:
-            url_list.append(article_url.get_attribute("href"))
-    for element in range(len(title_list)):
-        article = {}
-        article["title"] = title_list[element]
-        article["url"] = url_list[element]
-        articles_list.append(article)
+        response = requests.get(url)
+        try:
+            response.status_code == 200
+            #make a logging system
+        except Exception as error:
+            print("Error has occured: " + str(error))
+    
+        soup = BeautifulSoup(response.text, 'html.parser')
+        articles = soup.find('div',class_='art-prev')
+        divs = articles.find_all('div', class_='title')
+        titles = []
+        for title in divs:
+            titles.append(title.text)
+
+        a_tags = articles.find_all('a', href = True)
+        links = []
+        for url in a_tags:
+            link = url['href']
+            link = 'https://www.gov.pl' + link
+            links.append(link)
+        
+        for element in range(len(titles)):
+            article = {}
+            article["title"] = titles[element]
+            article["url"] = links[element]
+            articles_list.append(article)
+    
     return articles_list
-
-
+        
 def get_current_articles_on_website_podatki_gov_pl():
-    articles_list = []
-    url_podatki_gov_pl_list = [
+    
+    url_ministry_of_finance_list = [
         "https://www.podatki.gov.pl/cit/wyjasnienia/?page=1&query=",
         "https://www.podatki.gov.pl/cit/wyjasnienia/?page=2&query=",
         "https://www.podatki.gov.pl/pit/wyjasnienia-pit/?page=1&query=",
         "https://www.podatki.gov.pl/pit/wyjasnienia-pit/?page=2&query=",
         "https://www.podatki.gov.pl/pit/zmiany-w-prawie-pit/",
         "https://www.podatki.gov.pl/cit/zmiany-w-prawie-cit/",
-        "https://www.podatki.gov.pl/vat/wyjasnienia/",
+        "https://www.podatki.gov.pl/vat/wyjasnienia/"
     ]
-    for url in url_podatki_gov_pl_list:
-        browser.get(url)
-        articles = browser.find_element_by_class_name("col-md-9")
-        articles_title = articles.find_elements_by_class_name("list-item")
-        for anchor in articles_title:
-            anchor_tag = anchor.find_element_by_tag_name("a")
-            header_2 = anchor_tag.find_element_by_tag_name("h2")
+    articles_list = []
+    for url in url_ministry_of_finance_list:
+        response = requests.get(url)
+        try:
+            response.status_code == 200
+            #make a logging system
+        except Exception as error:
+            print("Error has occured: " + str(error))
+    
+        soup = BeautifulSoup(response.text, 'html.parser')
+        divs = soup.find_all('div', class_='list-item')
+        
+        for div in divs:
             article = {}
-            article["title"] = header_2.text
-            article["url"] = anchor_tag.get_attribute("href")
+            a_tag = div.find('a', href= True)
+            article['title'] = a_tag.text[1:-1]
+            link = "https://www.podatki.gov.pl" + a_tag['href']
+            article['url'] = link
             articles_list.append(article)
     return articles_list

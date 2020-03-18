@@ -137,7 +137,3 @@ def get_current_articles_from_projects():
                 logging.warning(f'TyeError as {err}')
 
     return articles_list
-
-    
-a = get_current_articles_from_projects()
-print(a)

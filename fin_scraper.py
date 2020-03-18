@@ -9,7 +9,8 @@ import schedule
 from current_ministry_of_finance import (
     get_current_articles_on_ministry_of_finance,
     get_current_articles_on_website_podatki_gov_pl,
-    get_current_articles_from_legislacja
+    get_current_articles_from_legislacja,
+    get_current_articles_from_projects
 )
 from send_mail import send_mail, make_massage
 from credentials import credentials as credentials
@@ -84,8 +85,21 @@ def main_job_get_current_articles():
     articles = get_current_articles_on_website_podatki_gov_pl()
     logging.info("I have finished getting articles from podatki.gov.pl")
     insert_articles_to_database(articles)
+    logging.info(
+        """
+        Gathered articles are inserted in to database 
+        and now I'm starting gathering current articles from legislacja"""
+        )
     articles = get_current_articles_from_legislacja()
     logging.info("I have finished getting articles from legislacja")
+    insert_articles_to_database(articles)
+    logging.info(
+        """
+        Gathered articles are inserted in to database 
+        and now I'm starting gathering current articles from projects"""
+        )
+    articles = get_current_articles_from_projects()
+    logging.info("I have finished getting articles from projects")
     insert_articles_to_database(articles)
 
 def job():

@@ -1,6 +1,6 @@
 import requests
 import logging
-from requests import Response
+from requests.exceptions import HTTPError
 from bs4 import BeautifulSoup
 
 
@@ -18,7 +18,7 @@ def get_current_articles_on_ministry_of_finance():
             response.status_code == 200
             #make a logging system
         except Exception as error:
-            logging.info("Error has occured: " + str(error))
+            logging.warning(f"Error has occured: {error}")
     
         soup = BeautifulSoup(response.text, 'html.parser')
         articles = soup.find('div',class_='art-prev')
@@ -60,7 +60,7 @@ def get_current_articles_on_website_podatki_gov_pl():
             response.status_code == 200
             #make a logging system
         except Exception as error:
-            logging.info("Error has occured: " + str(error))
+            logging.warning(f"Error has occured: {error}")
     
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('div', class_='list-item')
@@ -77,17 +77,21 @@ def get_current_articles_from_legislacja():
     
     url = "https://legislacja.gov.pl"
     try:
+        print("aa")
         response = requests.get(url, 
         headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
+        response.raise_for_status()
+    except HTTPError as error:
+        logging.warning(f'Httperror is raisde : {error}')
     except Exception as error:
-        logging.info("Error has occured: " + str(error))
-
+        logging.warning(f"Error has occured: {error}")
     soup = BeautifulSoup(response.text, 'html.parser')
+    print(soup)
 
     try:
         table = soup.find('table', class_='table')
     except Exception as error:
-        logging.info("Error has occured: " + str(error))
+        logging.warning(f"Error has occured: {error}")
     table_rows_list = table.find_all('tr')
     articles_list = []
     for row in table_rows_list:
@@ -97,9 +101,43 @@ def get_current_articles_from_legislacja():
             article['title'] = rowx.text
             article['url'] = 'https://legislacja.gov.pl' + rowx['href']
             articles_list.append(article)
-        except Exception as er:
-            logging.info("Error has occured: " + str(er))
+        except Exception as error:
+            logging.info(f"Error has occured: {error}")
     
     return articles_list
 
+def get_current_articles_from_projects():
+    url = 'https://www.sejm.gov.pl/Sejm9.nsf/agent.xsp?symbol=PROJNOWEUST&NrKadencji=9&Kol=D&Typ=UST&fbclid=IwAR0jonU6icSHBd-yDXSt2yhQ40M61aajEGnrsLjgwZuSTPNRK6FdIdRdD_A'
 
+    response = requests.get(url)
+    print(response.status_code)
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    table = soup.find('table', class_ = 'tab')
+    articles_list = []
+    for tr in table.find_all('tr'):
+        for a_tag in tr:
+            article ={}
+            try:
+                a_tag = tr.find('a', class_ = 'pdf')
+            except AttributeError as err:
+                logging.warning(f'Error {err}')
+            try:
+                anchor = a_tag['href']
+                title = a_tag.text
+                if a_tag['href'] == anchor and a_tag.text == title:
+                    article['url'] = a_tag['href']
+                    article['title'] = title
+                    articles_list.append(article)
+                    break
+            except AttributeError as err:
+                logging.warning(f'Error as {err}')
+            except TypeError as err:
+                logging.warning(f'TyeError as {err}')
+
+    return articles_list
+
+    
+a = get_current_articles_from_projects()
+print(a)

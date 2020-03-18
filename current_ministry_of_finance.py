@@ -1,6 +1,8 @@
 import requests
+import logging
 from requests import Response
 from bs4 import BeautifulSoup
+
 
    
 def get_current_articles_on_ministry_of_finance():
@@ -16,7 +18,7 @@ def get_current_articles_on_ministry_of_finance():
             response.status_code == 200
             #make a logging system
         except Exception as error:
-            print("Error has occured: " + str(error))
+            logging.info("Error has occured: " + str(error))
     
         soup = BeautifulSoup(response.text, 'html.parser')
         articles = soup.find('div',class_='art-prev')
@@ -58,7 +60,7 @@ def get_current_articles_on_website_podatki_gov_pl():
             response.status_code == 200
             #make a logging system
         except Exception as error:
-            print("Error has occured: " + str(error))
+            logging.info("Error has occured: " + str(error))
     
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('div', class_='list-item')
@@ -71,3 +73,38 @@ def get_current_articles_on_website_podatki_gov_pl():
             article['url'] = link
             articles_list.append(article)
     return articles_list
+def get_current_articles_from_legislacja():
+    
+    url = "https://legislacja.gov.pl"
+    print(url)
+    try:
+        response = requests.get(url, 
+        headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
+    except Exception as error:
+        logging.info("Error has occured: " + str(error))
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    try:
+        table = soup.find('table', class_='table')
+    except Exception as error:
+        logging.info("Error has occured: " + str(error))
+    table_rows_list = table.find_all('tr')
+    articles_list = []
+    for row in table_rows_list:
+        try:
+            article = {}
+            rowx = row.find('a', href=True)
+            article['title'] = rowx.text
+            article['url'] = 'https://legislacja.gov.pl' + rowx['href']
+            articles_list.append(article)
+        except Exception as er:
+            logging.info("Error has occured: " + str(er))
+    
+    return articles_list
+        
+
+a = get_current_articles_from_legislacja()
+print(a)
+
+

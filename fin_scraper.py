@@ -9,6 +9,7 @@ import schedule
 from current_ministry_of_finance import (
     get_current_articles_on_ministry_of_finance,
     get_current_articles_on_website_podatki_gov_pl,
+    get_current_articles_from_legislacja
 )
 from send_mail import send_mail, make_massage
 from credentials import credentials as credentials
@@ -17,7 +18,7 @@ from shorten_url import shorten_link
 username = credentials["username"]
 password = credentials["password"]
 
-logging.basicConfig(filename='financial_newsletter_log', level=logging.DEBUG)
+logging.basicConfig(filename='financial_newsletter_log', level=logging.INFO)
 
 to_smbdy = username
 from_smbdy = username
@@ -52,11 +53,16 @@ def insert_articles_to_database(articles_list):
             cursor.execute(
                 "INSERT INTO Articles VALUES (?,?)", (article["title"], article["url"])
             )
+            print("Art has been added")
             logging.info("Article has been added to database")
             article["url"] = shorten_link(article["url"])
-            send_mail(
-                username, password, to_smbdy, from_smbdy, subject, make_massage(article)
-            )
+            try:
+                send_mail(
+                    username, password, to_smbdy, from_smbdy, subject, make_massage(article)
+                )
+                print("I have send mail")
+            except Exception as error:
+                print(error)
             database_connection.commit()
 
 
@@ -78,13 +84,17 @@ def main_job_get_current_articles():
     articles = get_current_articles_on_website_podatki_gov_pl()
     logging.info("I have finished getting articles from podatki.gov.pl")
     insert_articles_to_database(articles)
+    articles = get_current_articles_from_legislacja()
+    logging.info("I have finished getting articles from legislacja")
+    insert_articles_to_database(articles)
 
 def job():
+    print("I have started scraping")
     main_job_get_current_articles()
 
 if __name__ == "__main__":
 
-    get_archive_and_make_database()
+    #get_archive_and_make_database()
     schedule.every(5).minutes.do(job)
 
     while True:

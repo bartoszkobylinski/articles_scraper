@@ -76,7 +76,6 @@ def get_current_articles_on_website_podatki_gov_pl():
 def get_current_articles_from_legislacja():
     
     url = "https://legislacja.gov.pl"
-    print(url)
     try:
         response = requests.get(url, 
         headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
@@ -102,9 +101,5 @@ def get_current_articles_from_legislacja():
             logging.info("Error has occured: " + str(er))
     
     return articles_list
-        
-
-a = get_current_articles_from_legislacja()
-print(a)
 
 

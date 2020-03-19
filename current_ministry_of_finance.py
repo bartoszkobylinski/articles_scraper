@@ -77,7 +77,6 @@ def get_current_articles_from_legislacja():
     
     url = "https://legislacja.gov.pl"
     try:
-        print("aa")
         response = requests.get(url, 
         headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
         response.raise_for_status()
@@ -86,7 +85,6 @@ def get_current_articles_from_legislacja():
     except Exception as error:
         logging.warning(f"Error has occured: {error}")
     soup = BeautifulSoup(response.text, 'html.parser')
-    print(soup)
 
     try:
         table = soup.find('table', class_='table')
@@ -110,7 +108,6 @@ def get_current_articles_from_projects():
     url = 'https://www.sejm.gov.pl/Sejm9.nsf/agent.xsp?symbol=PROJNOWEUST&NrKadencji=9&Kol=D&Typ=UST&fbclid=IwAR0jonU6icSHBd-yDXSt2yhQ40M61aajEGnrsLjgwZuSTPNRK6FdIdRdD_A'
 
     response = requests.get(url)
-    print(response.status_code)
 
     soup = BeautifulSoup(response.text, 'html.parser')
     

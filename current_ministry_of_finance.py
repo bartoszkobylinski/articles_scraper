@@ -27,25 +27,27 @@ def get_current_articles_on_ministry_of_finance():
             logging.warning(f"Erorr while finding articles in ministry_of_finance has occured: {error}")
         except Exception as error:
             logging.warning(f"Erorr while finding articles in ministry_of_finance has occured: {error}")
+
+        titles = []
+        links = [] 
         try:
             divs = articles.find_all('div', class_='title')
+            for title in divs:
+                titles.append(title.text)
         except AttributeError as error:
             logging.warning(f"Erorr while finding divs in ministry_of_finance has occured: {error}")
         except Exception as error:
             logging.warning(f"Erorr while finding divs in ministry_of_finance has occured: {error}")
-        titles = []
-        for title in divs:
-            titles.append(title.text)
+        
         try:
             a_tags = articles.find_all('a', href = True)
+            for url in a_tags:
+                link = url['href']
+                link = 'https://www.gov.pl' + link
+                links.append(link)
         except Exception as error:
             logging.warning(f"Erorr while finding a_tag in ministry_of_finance has occured: {error}")
-        links = []
-        for url in a_tags:
-            link = url['href']
-            link = 'https://www.gov.pl' + link
-            links.append(link)
-        
+
         for element in range(len(titles)):
             article = {}
             article["title"] = titles[element]

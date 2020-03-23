@@ -21,13 +21,25 @@ def get_current_articles_on_ministry_of_finance():
             logging.warning(f"Error has occured: {error}")
     
         soup = BeautifulSoup(response.text, 'html.parser')
-        articles = soup.find('div',class_='art-prev')
-        divs = articles.find_all('div', class_='title')
+        try:
+            articles = soup.find('div',class_='art-prev')
+        except AttributeError as error:
+            logging.warning(f"Erorr while finding articles in ministry_of_finance has occured: {error}")
+        except Exception as error:
+            logging.warning(f"Erorr while finding articles in ministry_of_finance has occured: {error}")
+        try:
+            divs = articles.find_all('div', class_='title')
+        except AttributeError as error:
+            logging.warning(f"Erorr while finding divs in ministry_of_finance has occured: {error}")
+        except Exception as error:
+            logging.warning(f"Erorr while finding divs in ministry_of_finance has occured: {error}")
         titles = []
         for title in divs:
             titles.append(title.text)
-
-        a_tags = articles.find_all('a', href = True)
+        try:
+            a_tags = articles.find_all('a', href = True)
+        except Exception as error:
+            logging.warning(f"Erorr while finding a_tag in ministry_of_finance has occured: {error}")
         links = []
         for url in a_tags:
             link = url['href']
@@ -63,7 +75,10 @@ def get_current_articles_on_website_podatki_gov_pl():
             logging.warning(f"Error has occured: {error}")
     
         soup = BeautifulSoup(response.text, 'html.parser')
-        divs = soup.find_all('div', class_='list-item')
+        try:
+            divs = soup.find_all('div', class_='list-item')
+        except Exception as error:
+            logging.warning(f"Erorr while finding divs in podatki_gov has occured: {error}")
         
         for div in divs:
             article = {}

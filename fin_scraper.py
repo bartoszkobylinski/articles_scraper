@@ -12,7 +12,7 @@ from current_ministry_of_finance import (
     get_current_articles_from_legislacja,
     get_current_articles_from_projects
 )
-from send_mail import send_mail, make_massage
+from send_mail import send_mail, make_message
 from credentials import credentials as credentials
 from shorten_url import shorten_link
 
@@ -20,10 +20,6 @@ username = credentials["username"]
 password = credentials["password"]
 
 logging.basicConfig(filename='financial_newsletter_log', level=logging.INFO)
-
-to_smbdy = username
-from_smbdy = username
-subject = "Opublikowano wlasnie nowy artykul na obserwowanych portalach"
 
 
 def make_database():
@@ -54,16 +50,19 @@ def insert_articles_to_database(articles_list):
             cursor.execute(
                 "INSERT INTO Articles VALUES (?,?)", (article["title"], article["url"])
             )
-            print("Art has been added")
             logging.info("Article has been added to database")
             article["url"] = shorten_link(article["url"])
             try:
+                #body_message = make_message(article)
+                '''
                 send_mail(
-                    username, password, to_smbdy, from_smbdy, subject, make_massage(article)
+                    username, password, body=body_message.encode("utf-8")
                 )
-                print("I have send mail")
+                '''
+                send_mail(article)
+                logging.info("Mail has been send.")
             except Exception as error:
-                print(error)
+                print(f"Error ocured while system tried to send mail with error message: {error}")
             database_connection.commit()
 
 
@@ -104,14 +103,14 @@ def main_job_get_current_articles():
 
 def job():
     print("I have started scraping")
+    get_archive_and_make_database()
     main_job_get_current_articles()
 
 if __name__ == "__main__":
-
     #get_archive_and_make_database()
-    schedule.every(5).minutes.do(job)
+    schedule.every(1).minutes.do(job)
 
     while True:
         schedule.run_pending()
         time.sleep(1)
-
+   

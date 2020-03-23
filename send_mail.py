@@ -1,47 +1,33 @@
 import smtplib
 import jinja2
+import logging
 from smtplib import SMTP, SMTPAuthenticationError, SMTPException
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from jinja2 import Environment, FileSystemLoader
+from email.message import EmailMessage
 
-# from articles_list import articles
 
 from credentials import credentials 
 
 
-def send_mail(
-    username,
-    password,
-    to_whom= credentials['username'],
-    sender=credentials['username'],
-    subject="New article has been published!",
-    body=None,
-    ):
-    host = "smtp.gmail.com"
-    port = 587
-    massage = MIMEMultipart("alternative")
-    massage["From"] = sender
-    massage["Subject"] = subject
-    massage["To"] = to_whom
-    massage.attach(MIMEText(body, "html"))
-    
-    email_connection = smtplib.SMTP(host=host, port=port)
-    email_connection.ehlo()
-    email_connection.starttls()
+def make_message(article):
     try:
-        email_connection.login(username, password)
-        email_connection.sendmail(sender, to_whom, massage.as_string())
+        file_loader = FileSystemLoader("templates")
+        env = Environment(loader=file_loader)
+        template = env.get_template("template.txt")
+        message = template.render(data=article)
     except Exception as error:
-        print(error)
-    finally:
-        email_connection.quit()
+        logging.warning(f"Error occured while making a message: {error}")
+    return message
 
 
-def make_massage(articles):
+def send_mail(article):
+    msg = EmailMessage()
+    msg['Subject'] = "Nowy artykul zostal opublikowany na wybranych portalach"
+    msg['From'] = credentials['username']
+    msg['To'] = credentials['to_whom']
+    body = make_message(article)
+    msg.set_content(body)
 
-    file_loader = FileSystemLoader("templates")
-    env = Environment(loader=file_loader)
-    template = env.get_template("template.txt")
-    massege = template.render(data=articles)
-    return massege
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(credentials['username'], credentials['password'])
+        smtp.send_message(msg)

@@ -29,5 +29,11 @@ def send_mail(article):
     msg.set_content(body)
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(credentials['username'], credentials['password'])
-        smtp.send_message(msg)
+        try:
+            smtp.login(credentials['username'], credentials['password'])
+        except Exception as error:
+            logging.warning(f"Error has occured while script tried to log in to gmail account: {error}")
+        try:
+            smtp.send_message(msg)
+        except Exception as error:
+            logging.warning(f"Error has occured while script tried to send message from gmail account: {error}")

@@ -107,19 +107,23 @@ def get_current_articles_from_legislacja():
         table = soup.find('table', class_='table')
     except Exception as error:
         logging.warning(f"Error has occured: {error}")
-    table_rows_list = table.find_all('tr')
-    articles_list = []
-    for row in table_rows_list:
-        try:
-            article = {}
-            rowx = row.find('a', href=True)
-            article['title'] = rowx.text
-            article['url'] = 'https://legislacja.gov.pl' + rowx['href']
-            articles_list.append(article)
-        except Exception as error:
-            logging.info(f"Error has occured: {error}")
-    
-    return articles_list
+    try:
+
+        table_rows_list = table.find_all('tr')
+        articles_list = []
+        for row in table_rows_list:
+            try:
+                article = {}
+                rowx = row.find('a', href=True)
+                article['title'] = rowx.text
+                article['url'] = 'https://legislacja.gov.pl' + rowx['href']
+                articles_list.append(article)
+            except Exception as error:
+                logging.info(f"Error has occured: {error}")
+    except Exception as error:
+        logging.warning(f"Error:{error}")
+    finally:
+        return articles_list
 
 def get_current_articles_from_projects():
     url = 'https://www.sejm.gov.pl/Sejm9.nsf/agent.xsp?symbol=PROJNOWEUST&NrKadencji=9&Kol=D&Typ=UST&fbclid=IwAR0jonU6icSHBd-yDXSt2yhQ40M61aajEGnrsLjgwZuSTPNRK6FdIdRdD_A'
@@ -128,26 +132,32 @@ def get_current_articles_from_projects():
 
     soup = BeautifulSoup(response.text, 'html.parser')
     
-    table = soup.find('table', class_ = 'tab')
+    try:
+        table = soup.find('table', class_ = 'tab')
+    except Exception as error:
+        logging.warning(f'Error: {error}')
     articles_list = []
-    for tr in table.find_all('tr'):
-        for a_tag in tr:
-            article ={}
-            try:
-                a_tag = tr.find('a', class_ = 'pdf')
-            except AttributeError as err:
-                logging.warning(f'Error {err}')
-            try:
-                anchor = a_tag['href']
-                title = a_tag.text
-                if a_tag['href'] == anchor and a_tag.text == title:
-                    article['url'] = a_tag['href']
-                    article['title'] = title
-                    articles_list.append(article)
-                    break
-            except AttributeError as err:
-                logging.warning(f'Error as {err}')
-            except TypeError as err:
-                logging.warning(f'TyeError as {err}')
-
-    return articles_list
+    try:
+        for tr in table.find_all('tr'):
+            for a_tag in tr:
+                article ={}
+                try:
+                    a_tag = tr.find('a', class_ = 'pdf')
+                except AttributeError as err:
+                    logging.warning(f'Error {err}')
+                try:
+                    anchor = a_tag['href']
+                    title = a_tag.text
+                    if a_tag['href'] == anchor and a_tag.text == title:
+                        article['url'] = a_tag['href']
+                        article['title'] = title
+                        articles_list.append(article)
+                        break
+                except AttributeError as err:
+                    logging.warning(f'Error as {err}')
+                except TypeError as err:
+                    logging.warning(f'TyeError as {err}')\
+    except Exception as error:
+        logging.warning(f"Error as {error}")
+    finally:
+        return articles_list

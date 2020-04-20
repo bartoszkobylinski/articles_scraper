@@ -18,15 +18,15 @@ def get_current_articles_on_ministry_of_finance():
             response.status_code == 200
             #make a logging system
         except Exception as error:
-            logging.warning(f"Error has occured: {error}")
+            logging.error(f"While trying to get response from {url} an error occured: {error}")
     
         soup = BeautifulSoup(response.text, 'html.parser')
         try:
             articles = soup.find('div',class_='art-prev')
         except AttributeError as error:
-            logging.warning(f"Erorr while finding articles in ministry_of_finance has occured: {error}")
+            logging.warning(f"While process scraper has not found articles insted an error occured: {error}")
         except Exception as error:
-            logging.warning(f"Erorr while finding articles in ministry_of_finance has occured: {error}")
+            logging.warning(f"Another Exception has occured: {error}")
 
         titles = []
         links = [] 
@@ -35,9 +35,9 @@ def get_current_articles_on_ministry_of_finance():
             for title in divs:
                 titles.append(title.text)
         except AttributeError as error:
-            logging.warning(f"Erorr while finding divs in ministry_of_finance has occured: {error}")
+            logging.warning(f"Erorr while finding divs in {url} has occured: {error}")
         except Exception as error:
-            logging.warning(f"Erorr while finding divs in ministry_of_finance has occured: {error}")
+            logging.warning(f"Erorr while finding divs in {url} has occured: {error}")
         
         try:
             a_tags = articles.find_all('a', href = True)
@@ -46,7 +46,7 @@ def get_current_articles_on_ministry_of_finance():
                 link = 'https://www.gov.pl' + link
                 links.append(link)
         except Exception as error:
-            logging.warning(f"Erorr while finding a_tag in ministry_of_finance has occured: {error}")
+            logging.warning(f"Erorr while finding a_tag in {url} has occured: {error}")
 
         for element in range(len(titles)):
             article = {}
@@ -90,6 +90,7 @@ def get_current_articles_on_website_podatki_gov_pl():
             article['url'] = link
             articles_list.append(article)
     return articles_list
+
 def get_current_articles_from_legislacja():
     
     url = "https://legislacja.gov.pl"
@@ -98,15 +99,15 @@ def get_current_articles_from_legislacja():
         headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
         response.raise_for_status()
     except HTTPError as error:
-        logging.warning(f'Httperror is raisde : {error}')
+        logging.warning(f'HTTP ERROR has ocured while scraping {url} : {error}')
     except Exception as error:
-        logging.warning(f"Error has occured: {error}")
+        logging.warning(f"Another error has occured: {error}")
     soup = BeautifulSoup(response.text, 'html.parser')
 
     try:
         table = soup.find('table', class_='table')
     except Exception as error:
-        logging.warning(f"Error has occured: {error}")
+        logging.warning(f"Error has occured while scraping {url}: {error}")
     try:
 
         table_rows_list = table.find_all('tr')
@@ -119,7 +120,7 @@ def get_current_articles_from_legislacja():
                 article['url'] = 'https://legislacja.gov.pl' + rowx['href']
                 articles_list.append(article)
             except Exception as error:
-                logging.info(f"Error has occured: {error}")
+                logging.info(f"Error has occured while scraper try te find article in table on website {url}: {error}")
     except Exception as error:
         logging.warning(f"Error:{error}")
     finally:
@@ -154,10 +155,10 @@ def get_current_articles_from_projects():
                         articles_list.append(article)
                         break
                 except AttributeError as err:
-                    logging.warning(f'Error as {err}')
+                    logging.warning(f'Error on url {url} as {err}')
                 except TypeError as err:
-                    logging.warning(f'TyeError as {err}')
+                    logging.warning(f'TypeError on url {url} as {err}')
     except Exception as error:
-        logging.warning(f"Error as {error}")
+        logging.warning(f"Error on url {url} as {error}")
     finally:
         return articles_list

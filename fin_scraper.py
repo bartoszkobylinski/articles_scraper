@@ -101,7 +101,7 @@ def job():
 
 if __name__ == "__main__":
     #get_archive_and_make_database()
-    schedule.every(5).minutes.do(job)
+    schedule.every(120).minutes.do(job)
 
     while True:
         schedule.run_pending()

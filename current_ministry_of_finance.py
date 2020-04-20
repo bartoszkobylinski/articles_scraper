@@ -156,7 +156,7 @@ def get_current_articles_from_projects():
                 except AttributeError as err:
                     logging.warning(f'Error as {err}')
                 except TypeError as err:
-                    logging.warning(f'TyeError as {err}')\
+                    logging.warning(f'TyeError as {err}')
     except Exception as error:
         logging.warning(f"Error as {error}")
     finally:

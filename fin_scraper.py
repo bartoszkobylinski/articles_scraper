@@ -1,6 +1,6 @@
 import sqlite3
 import logging
-import time
+import time, datetime
 import smtplib
 import requests
 import requests_cache
@@ -54,7 +54,8 @@ def insert_articles_to_database(articles_list):
             article["url"] = shorten_link(article["url"])
             try:
                 send_mail(article)
-                logging.info("Mail has been send.")
+                t = datetime.datetime.now()
+                print(f"Mail has been send at {t}.")
             except Exception as error:
                 logging.warning(f"Error ocured while system tried to send mail with error message: {error}")
             database_connection.commit()

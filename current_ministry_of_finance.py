@@ -1,6 +1,6 @@
 import requests
 import logging
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, ConnectionError
 from bs4 import BeautifulSoup
 
 
@@ -17,6 +17,8 @@ def get_current_articles_on_ministry_of_finance():
         try:
             response.status_code == 200
             #make a logging system
+        except ConnectionError as connection_error:
+            logging.error(f"While trying to get response from {url} an error occured: {connection_error}")
         except Exception as error:
             logging.error(f"While trying to get response from {url} an error occured: {error}")
     
@@ -127,7 +129,7 @@ def get_current_articles_from_legislacja():
         return articles_list
 
 def get_current_articles_from_projects():
-    url = 'https://www.sejm.gov.pl/Sejm9.nsf/agent.xsp?symbol=PROJNOWEUST&NrKadencji=9&Kol=D&Typ=UST&fbclid=IwAR0jonU6icSHBd-yDXSt2yhQ40M61aajEGnrsLjgwZuSTPNRK6FdIdRdD_A'
+    url = 'https://www.sejm.gov.pl/Sejm9.nsf/agent.xsp?symbol=PROJNOWEUST&NrKadencji=9&Kol=D&Typ=UST'
 
     response = requests.get(url)
 

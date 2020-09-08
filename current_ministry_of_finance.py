@@ -89,7 +89,7 @@ def get_current_articles_on_website_podatki_gov_pl():
         try:
             divs = soup.find_all('div', class_='list-item')
         except Exception as error:
-            logging.warning(f"""Erorr while finding divs in podatki_gov has
+            logging.error(f"""Erorr while finding divs in podatki_gov has
                 occured: {error}""")
 
         for div in divs:
@@ -112,15 +112,15 @@ def get_current_articles_from_legislacja():
                                     'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
         response.raise_for_status()
     except HTTPError as error:
-        logging.warning(f'HTTP ERROR has ocured while scraping {url}: {error}')
+        logging.error(f'HTTP ERROR has ocured while scraping {url}: {error}')
     except Exception as error:
-        logging.warning(f"Another error has occured: {error}")
+        logging.error(f"Another error has occured: {error}")
     soup = BeautifulSoup(response.text, 'html.parser')
 
     try:
         table = soup.find('table', class_='table')
     except Exception as error:
-        logging.warning(f"Error has occured while scraping {url}: {error}")
+        logging.error(f"Error has occured while scraping {url}: {error}")
     try:
 
         table_rows_list = table.find_all('tr')
@@ -133,10 +133,10 @@ def get_current_articles_from_legislacja():
                 article['url'] = 'https://legislacja.gov.pl' + rowx['href']
                 articles_list.append(article)
             except Exception as error:
-                logging.info(f"""Error has occured while scraper try to find
+                logging.error(f"""Error has occured while scraper try to find
                     article in table on website {url}: {error}""")
     except Exception as error:
-        logging.warning(f"Error:{error}")
+        logging.error(f"Error:{error}")
     finally:
         return articles_list
 
@@ -151,7 +151,7 @@ def get_current_articles_from_projects():
     try:
         table = soup.find('table', class_='tab')
     except Exception as error:
-        logging.warning(f'Error: {error}')
+        logging.error(f'Error: {error}')
     articles_list = []
     try:
         for tr in table.find_all('tr'):
@@ -160,7 +160,7 @@ def get_current_articles_from_projects():
                 try:
                     a_tag = tr.find('a', class_='pdf')
                 except AttributeError as err:
-                    logging.warning(f'Error {err}')
+                    logging.error(f'Error {err}')
                 try:
                     anchor = a_tag['href']
                     title = a_tag.text
@@ -170,10 +170,10 @@ def get_current_articles_from_projects():
                         articles_list.append(article)
                         break
                 except AttributeError as err:
-                    logging.warning(f'Error on url {url} as {err}')
+                    logging.error(f'Error on url {url} as {err}')
                 except TypeError as err:
-                    logging.warning(f'TypeError on url {url} as {err}')
+                    logging.error(f'TypeError on url {url} as {err}')
     except Exception as error:
-        logging.warning(f"Error on url {url} as {error}")
+        logging.error(f"Error on url {url} as {error}")
     finally:
         return articles_list

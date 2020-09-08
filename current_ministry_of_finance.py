@@ -4,7 +4,6 @@ from requests.exceptions import HTTPError, ConnectionError
 from bs4 import BeautifulSoup
 
 
-   
 def get_current_articles_on_ministry_of_finance():
 
     url_ministry_of_finance_list = [
@@ -16,50 +15,56 @@ def get_current_articles_on_ministry_of_finance():
         response = requests.get(url)
         try:
             response.status_code == 200
-            #make a logging system
         except ConnectionError as connection_error:
-            logging.error(f"While trying to get response from {url} an error occured: {connection_error}")
+            logging.error(f"""While trying to get response from {url} an error
+                occured: {connection_error}""")
         except Exception as error:
-            logging.error(f"While trying to get response from {url} an error occured: {error}")
-    
+            logging.error(f"""While trying to get response from {url} an error
+                occured: {error}""")
+
         soup = BeautifulSoup(response.text, 'html.parser')
         try:
-            articles = soup.find('div',class_='art-prev')
-        except AttributeError as error:
-            logging.warning(f"While process scraper has not found articles insted an error occured: {error}")
+            articles = soup.find('div', class_='art-prev')
+        except AttributeError as atr_error:
+            logging.error(f"""While process scraper has not found articles
+                insted an error occured: {atr_error}""")
         except Exception as error:
-            logging.warning(f"Another Exception has occured: {error}")
+            logging.error(f"Another Exception has occured: {error}")
 
         titles = []
-        links = [] 
+        links = []
         try:
             divs = articles.find_all('div', class_='title')
             for title in divs:
                 titles.append(title.text)
-        except AttributeError as error:
-            logging.warning(f"Erorr while finding divs in {url} has occured: {error}")
+        except AttributeError as atr_error:
+            logging.error(f"""Erorr while finding divs in {url} has occured:
+                {atr_error}""")
         except Exception as error:
-            logging.warning(f"Erorr while finding divs in {url} has occured: {error}")
-        
+            logging.error(f"""Erorr while finding divs in {url} has occured:
+                {error}""")
+
         try:
-            a_tags = articles.find_all('a', href = True)
+            a_tags = articles.find_all('a', href=True)
             for url in a_tags:
                 link = url['href']
                 link = 'https://www.gov.pl' + link
                 links.append(link)
         except Exception as error:
-            logging.warning(f"Erorr while finding a_tag in {url} has occured: {error}")
+            logging.error(f"""Erorr while finding a_tag in {url} has occured:
+                {error}""")
 
         for element in range(len(titles)):
             article = {}
             article["title"] = titles[element]
             article["url"] = links[element]
             articles_list.append(article)
-    
+
     return articles_list
-        
+
+
 def get_current_articles_on_website_podatki_gov_pl():
-    
+
     url_ministry_of_finance_list = [
         "https://www.podatki.gov.pl/cit/wyjasnienia/?page=1&query=",
         "https://www.podatki.gov.pl/cit/wyjasnienia/?page=2&query=",
@@ -74,34 +79,40 @@ def get_current_articles_on_website_podatki_gov_pl():
         response = requests.get(url)
         try:
             response.status_code == 200
-            #make a logging system
+        except HTTPError as http_err:
+            logging.error(f"""Http Error: {http_err} has occured with response
+                from url: {url}""")
         except Exception as error:
-            logging.warning(f"Error has occured: {error}")
-    
+            logging.error(f"An error has occured: {error}")
+
         soup = BeautifulSoup(response.text, 'html.parser')
         try:
             divs = soup.find_all('div', class_='list-item')
         except Exception as error:
-            logging.warning(f"Erorr while finding divs in podatki_gov has occured: {error}")
-        
+            logging.warning(f"""Erorr while finding divs in podatki_gov has
+                occured: {error}""")
+
         for div in divs:
             article = {}
-            a_tag = div.find('a', href= True)
+            a_tag = div.find('a', href=True)
             article['title'] = a_tag.text[1:-1]
             link = "https://www.podatki.gov.pl" + a_tag['href']
             article['url'] = link
             articles_list.append(article)
     return articles_list
 
+
 def get_current_articles_from_legislacja():
-    
+
     url = "https://legislacja.gov.pl"
     try:
-        response = requests.get(url, 
-        headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
+        response = requests.get(url,
+                                headers={
+                                    'User-Agent':
+                                    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
         response.raise_for_status()
     except HTTPError as error:
-        logging.warning(f'HTTP ERROR has ocured while scraping {url} : {error}')
+        logging.warning(f'HTTP ERROR has ocured while scraping {url}: {error}')
     except Exception as error:
         logging.warning(f"Another error has occured: {error}")
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -122,11 +133,13 @@ def get_current_articles_from_legislacja():
                 article['url'] = 'https://legislacja.gov.pl' + rowx['href']
                 articles_list.append(article)
             except Exception as error:
-                logging.info(f"Error has occured while scraper try te find article in table on website {url}: {error}")
+                logging.info(f"""Error has occured while scraper try to find
+                    article in table on website {url}: {error}""")
     except Exception as error:
         logging.warning(f"Error:{error}")
     finally:
         return articles_list
+
 
 def get_current_articles_from_projects():
     url = 'https://www.sejm.gov.pl/Sejm9.nsf/agent.xsp?symbol=PROJNOWEUST&NrKadencji=9&Kol=D&Typ=UST'
@@ -134,18 +147,18 @@ def get_current_articles_from_projects():
     response = requests.get(url)
 
     soup = BeautifulSoup(response.text, 'html.parser')
-    
+
     try:
-        table = soup.find('table', class_ = 'tab')
+        table = soup.find('table', class_='tab')
     except Exception as error:
         logging.warning(f'Error: {error}')
     articles_list = []
     try:
         for tr in table.find_all('tr'):
             for a_tag in tr:
-                article ={}
+                article = {}
                 try:
-                    a_tag = tr.find('a', class_ = 'pdf')
+                    a_tag = tr.find('a', class_='pdf')
                 except AttributeError as err:
                     logging.warning(f'Error {err}')
                 try:

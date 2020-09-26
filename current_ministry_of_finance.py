@@ -16,18 +16,15 @@ def get_current_articles_on_ministry_of_finance():
         try:
             response.status_code == 200
         except ConnectionError as connection_error:
-            logging.error(f"""While trying to get response from {url} an error
-                occured: {connection_error}""")
+            logging.error(f"""While trying to get response from {url} an error occured: {connection_error}""")
         except Exception as error:
-            logging.error(f"""While trying to get response from {url} an error
-                occured: {error}""")
+            logging.error(f"""While trying to get response from {url} an error occured: {error}""")
 
         soup = BeautifulSoup(response.text, 'html.parser')
         try:
             articles = soup.find('div', class_='art-prev')
         except AttributeError as atr_error:
-            logging.error(f"""While process scraper has not found articles
-                insted an error occured: {atr_error}""")
+            logging.error(f"""While process scraper has not found articles insted an error occured: {atr_error}""")
         except Exception as error:
             logging.error(f"Another Exception has occured: {error}")
 
@@ -38,11 +35,9 @@ def get_current_articles_on_ministry_of_finance():
             for title in divs:
                 titles.append(title.text)
         except AttributeError as atr_error:
-            logging.error(f"""Erorr while finding divs in {url} has occured:
-                {atr_error}""")
+            logging.error(f"""Erorr while finding divs in {url} has occured: {atr_error}""")
         except Exception as error:
-            logging.error(f"""Erorr while finding divs in {url} has occured:
-                {error}""")
+            logging.error(f"""Erorr while finding divs in {url} has occured: {error}""")
 
         try:
             a_tags = articles.find_all('a', href=True)
@@ -51,8 +46,7 @@ def get_current_articles_on_ministry_of_finance():
                 link = 'https://www.gov.pl' + link
                 links.append(link)
         except Exception as error:
-            logging.error(f"""Erorr while finding a_tag in {url} has occured:
-                {error}""")
+            logging.error(f"""Erorr while finding a_tag in {url} has occured: {error}""")
 
         for element in range(len(titles)):
             article = {}
@@ -80,17 +74,14 @@ def get_current_articles_on_website_podatki_gov_pl():
         try:
             response.status_code == 200
         except HTTPError as http_err:
-            logging.error(f"""Http Error: {http_err} has occured with response
-                from url: {url}""")
+            logging.error(f"""Http Error: {http_err} has occured with response from url: {url}""")
         except Exception as error:
             logging.error(f"An error has occured: {error}")
-
         soup = BeautifulSoup(response.text, 'html.parser')
         try:
             divs = soup.find_all('div', class_='list-item')
         except Exception as error:
-            logging.error(f"""Erorr while finding divs in podatki_gov has
-                occured: {error}""")
+            logging.error(f"""Erorr while finding divs in podatki_gov has occured: {error}""")
 
         for div in divs:
             article = {}
@@ -106,10 +97,11 @@ def get_current_articles_from_legislacja():
 
     url = "https://legislacja.gov.pl"
     try:
-        response = requests.get(url,
-                                headers={
-                                    'User-Agent':
-                                    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
+        response = requests.get(
+            url,
+            headers={
+                'User-Agent':
+                'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
         response.raise_for_status()
     except HTTPError as error:
         logging.error(f'HTTP ERROR has ocured while scraping {url}: {error}')
@@ -118,11 +110,10 @@ def get_current_articles_from_legislacja():
     soup = BeautifulSoup(response.text, 'html.parser')
 
     try:
-        table = soup.find('table', class_='table')
+        table = soup.find('table', class_='table-hover')
     except Exception as error:
         logging.error(f"Error has occured while scraping {url}: {error}")
     try:
-
         table_rows_list = table.find_all('tr')
         articles_list = []
         for row in table_rows_list:
@@ -133,8 +124,8 @@ def get_current_articles_from_legislacja():
                 article['url'] = 'https://legislacja.gov.pl' + rowx['href']
                 articles_list.append(article)
             except Exception as error:
-                logging.error(f"""Error has occured while scraper try to find
-                    article in table on website {url}: {error}""")
+                logging.error(
+                    f"""Error has occured while scraper try to find article in table on website {url}: {error}""")
     except Exception as error:
         logging.error(f"Error:{error}")
     finally:

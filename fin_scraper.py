@@ -2,7 +2,6 @@ import datetime
 import logging
 import sqlite3
 import time
-
 import schedule
 
 from current_ministry_of_finance import (
@@ -44,19 +43,18 @@ def insert_articles_to_database(articles_list):
             cursor.execute(
                 "INSERT INTO Articles VALUES (?,?)", (article["title"],
                                                       article["url"]))
-            logging.info("Article has been added to database")
-            article["url"] = shorten_link(article["url"])
-            time.sleep(30)
-            send_mail(article)
             current_time = datetime.datetime.now()
             current_time = current_time.strftime("%b %d %Y %H:%M")
-            logging.info(f"Mail has been send at {current_time}.")
+            logging.info(f"Article has been added to database at {current_time}")
+            article["url"] = shorten_link(article["url"])
+            send_mail(article)
             database_connection.commit()
 
 
 def get_archive_and_make_database():
     make_database()
     logging.info("I have made a database function")
+    return True
 
 
 def main_job_get_current_articles():
@@ -65,41 +63,34 @@ def main_job_get_current_articles():
     logging.info("I have finished getting articles from ministry of finance")
     insert_articles_to_database(articles)
     logging.info(
-        """
-        Gathered articles are inserted in to database
-        and now I'm starting gathering current articles from podatki.gov.pl"""
-        )
+        "I've started scraping current articles from podatki.gov.pl")
     articles = get_current_articles_on_website_podatki_gov_pl()
     logging.info("I have finished getting articles from podatki.gov.pl")
     insert_articles_to_database(articles)
-    logging.info(
-        """
-        Gathered articles are inserted in to database
-        and now I'm starting gathering current articles from legislacja"""
-        )
+    logging.info("I've started scraping current articles from legislacja")
     articles = get_current_articles_from_legislacja()
     logging.info("I have finished getting articles from legislacja")
     insert_articles_to_database(articles)
-    logging.info(
-        """
-        Gathered articles are inserted in to database
-        and now I'm starting gathering current articles from projects"""
-        )
+    logging.info("I've started scraping current articles from projects")
     articles = get_current_articles_from_projects()
     logging.info("I have finished getting articles from projects")
     insert_articles_to_database(articles)
 
 
 def job():
-    print("I have started scraping")
+    get_archive_and_make_database()
     main_job_get_current_articles()
 
 
 if __name__ == "__main__":
-    # get_archive_and_make_database()
+
+    get_archive_and_make_database()
     main_job_get_current_articles()
-    schedule.every(1).minutes.do(job)
+
+'''
+    schedule.every(15).minutes.do(job)
 
     while True:
         schedule.run_pending()
         time.sleep(1)
+'''

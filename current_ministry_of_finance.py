@@ -12,7 +12,7 @@ def get_current_articles_on_ministry_of_finance():
     ]
     articles_list = []
     for url in url_ministry_of_finance_list:
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
         try:
             response.status_code == 200
         except ConnectionError as connection_error:
@@ -70,7 +70,7 @@ def get_current_articles_on_website_podatki_gov_pl():
     ]
     articles_list = []
     for url in url_ministry_of_finance_list:
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
         try:
             response.status_code == 200
         except HTTPError as http_err:
@@ -99,6 +99,7 @@ def get_current_articles_from_legislacja():
     try:
         response = requests.get(
             url,
+            verify=False,
             headers={
                 'User-Agent':
                 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'})
@@ -135,7 +136,7 @@ def get_current_articles_from_legislacja():
 def get_current_articles_from_projects():
     url = 'https://www.sejm.gov.pl/Sejm9.nsf/agent.xsp?symbol=PROJNOWEUST&NrKadencji=9&Kol=D&Typ=UST'
 
-    response = requests.get(url)
+    response = requests.get(url, verify=False)
 
     soup = BeautifulSoup(response.text, 'html.parser')
 

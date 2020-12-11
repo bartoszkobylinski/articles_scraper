@@ -1,7 +1,8 @@
 .vscode/
 articles.db
-credentials.py
+mail_credentials.py
 __pycache__/
 fin_scraper_classes.py
 chromedriver
 financial_newsletter_log
+credentials.json

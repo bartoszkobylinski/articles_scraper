@@ -8,11 +8,12 @@ from current_ministry_of_finance import (
     get_current_articles_from_legislacja, get_current_articles_from_projects,
     get_current_articles_on_ministry_of_finance,
     get_current_articles_on_website_podatki_gov_pl)
-from send_mail import send_mail
 from shorten_url import shorten_link
+from mail_credentials import constants
+
+from quickstart import main
 
 logging.basicConfig(filename='financial_newsletter_log', level=logging.INFO)
-
 
 def make_database():
     database_connection = sqlite3.connect("articles.db")
@@ -47,7 +48,10 @@ def insert_articles_to_database(articles_list):
             current_time = current_time.strftime("%b %d %Y %H:%M")
             logging.info(f"Article has been added to database at {current_time}")
             article["url"] = shorten_link(article["url"])
-            send_mail(article)
+            for recipent in constants.get('recipients', ''):
+                main(article, recipent)
+            time.sleep(120)
+            # send_mail(article)
             database_connection.commit()
 
 
@@ -87,10 +91,8 @@ if __name__ == "__main__":
     get_archive_and_make_database()
     main_job_get_current_articles()
 
-'''
     schedule.every(15).minutes.do(job)
 
     while True:
         schedule.run_pending()
         time.sleep(1)
-'''
